@@ -2,6 +2,7 @@ package ru.isaev.consoletask.business;
 
 
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,32 +62,28 @@ class Service {
         Task task = new Task();
         task.setName("Deploy project");
         task.setPerson(person);
-        person.getTaskList().add(task);
         taskRep.save(task);
 
         Task task2 = new Task();
         task2.setName("Handle the exception");
         task2.setPerson(person);
-        person.getTaskList().add(task2);
         taskRep.save(task2);
 
         Task task3 = new Task();
         task3.setName("Handle the exception");
         task3.setPerson(person2);
-        person2.getTaskList().add(task3);
         taskRep.save(task3);
 
         Task task4 = new Task();
         task4.setName("Handle the exception");
         task4.setPerson(person3);
-        person3.getTaskList().add(task4);
         taskRep.save(task4);
 
 
-        project.getPersonList().add(person);
-        project.getPersonList().add(person2);
-        project2.getPersonList().add(person);
-        project3.getPersonList().add(person3);
+        project.getPersonSet().add(person);
+        project.getPersonSet().add(person2);
+        project2.getPersonSet().add(person);
+        project3.getPersonSet().add(person3);
 
         projectRep.save(project);
         projectRep.save(project2);
@@ -95,11 +92,11 @@ class Service {
         System.out.println("test data loaded");
     }
 
-    public List<Project> findAllProjects() {
+    public Set<Project> findAllProjects() {
         return projectRep.findAll();
     }
 
-    public List<Person> findAllPersons() {
+    public Set<Person> findAllPersons() {
         return personRep.findAll();
     }
 
@@ -126,20 +123,35 @@ class Service {
 
     @Transactional
     public void deletePerson(Long id) {
-//        Person person = personRep.findByPersonId(id);
-//        List<Project> projects = projectRep.findAll();
-//        for (Project project: projects){
-//            project.getPersonList().remove(person);
-//            person.getProjectList().remove(project);
-//            projectRep.save(project);
-//            personRep.save(person);
-//        }
-        entityManager.createNativeQuery("DELETE FROM PROJECT_PERSON where USER_ID = 1").executeUpdate();
-//        personRep.deleteByPersonId(id);
+        Person person = personRep.findByPersonId(id);
+        Set<Project> projects = projectRep.findAll();
+        for (Project project: projects){
+            project.getPersonSet().remove(person);
+            person.getProjectSet().remove(project);
+        }
+        entityManager.createNativeQuery("DELETE PROJECT_PERSON where USER_ID = :user_id")
+                .setParameter("user_id", id).executeUpdate();
+        entityManager.createNativeQuery("DELETE TASKS where PERSON_ID = :person_id")
+                .setParameter("person_id", id).executeUpdate();
+        personRep.deleteByPersonId(id);
     }
 
     @Transactional
     public void deleteTask(Long id) {
         taskRep.deleteByTaskId(id);
+    }
+
+    public void assignPersonToProject(long[] assignPersonToProject){
+        Person person = personRep.findByPersonId(assignPersonToProject[0]);
+        Project project = projectRep.findByProjectId(assignPersonToProject[1]);
+        project.getPersonSet().add(person);
+        saveProject(project);
+    }
+
+    public void assignTaskToPerson(long[] assignTaskToPerson){
+        Task task = taskRep.findByTaskId(assignTaskToPerson[0]);
+        Person person = personRep.findByPersonId(assignTaskToPerson[1]);
+        task.setPerson(person);
+        saveTask(task);
     }
 }

@@ -1,8 +1,9 @@
 package ru.isaev.consoletask.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "PROJECTS")
@@ -17,19 +18,18 @@ public class Project {
     private String name;
 
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-    @ManyToMany(targetEntity = Person.class,cascade = CascadeType.ALL )
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_person",
             joinColumns = {@JoinColumn(name = "project_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
-    private List<Person> personList = new ArrayList<>();
+    private Set<Person> personSet = new HashSet<>();
 
-    public List<Person> getPersonList() {
-        return personList;
+    public Set<Person> getPersonSet() {
+        return personSet;
     }
 
-    public void setPersonList(List<Person> personList) {
-        this.personList = personList;
+    public void setPersonSet(Set<Person> personSet) {
+        this.personSet = personSet;
     }
 
     public Project() {
@@ -57,10 +57,10 @@ public class Project {
         return "Project{" +
                 "projectId=" + projectId +
                 ", name='" + name + '\'' +
-                ", persons=" + setPersonsToString(personList) + "}";
+                ", persons=" + setPersonsToString(personSet) + "}";
     }
 
-    private String setPersonsToString(List<Person> persons){
+    private String setPersonsToString(Set<Person> persons){
         StringBuilder builder = new StringBuilder();
         for (Person person : persons){
             builder.append(" {id = " + person.getPersonId() + " name = " + person.getName() + "}");

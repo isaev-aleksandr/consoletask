@@ -10,5 +10,7 @@ public interface TaskRep extends CrudRepository<Task, Long> {
 
     List<Task> findAll();
 
+    Task findByTaskId(Long id);
+
     void deleteByTaskId(Long id);
 }

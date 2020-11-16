@@ -1,21 +1,20 @@
 package ru.isaev.consoletask.model;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name = "PERSONS")@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "PERSONS")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 
 public class Person {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id", nullable = false)
     private long personId;
 
@@ -23,15 +22,14 @@ public class Person {
     private String name;
 
 
-    @ManyToMany(targetEntity = Project.class,cascade = CascadeType.ALL )
-//    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_person",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "project_id")})
-    private List<Project> projectList = new ArrayList<>();
+    private Set<Project> projectSet = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
-    private List<Task> taskList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "person")
+    private Set<Task> taskSet = new HashSet<>();
 
     public Person() {
     }
@@ -53,20 +51,20 @@ public class Person {
         this.name = name;
     }
 
-    public List<Project> getProjectList() {
-        return projectList;
+    public Set<Project> getProjectSet() {
+        return projectSet;
     }
 
-    public void setProjectList(List<Project> projectList) {
-        this.projectList = projectList;
+    public void setProjectSet(Set<Project> projectSet) {
+        this.projectSet = projectSet;
     }
 
-    public List<Task> getTaskList() {
-        return taskList;
+    public Set<Task> getTaskSet() {
+        return taskSet;
     }
 
-    public void setTaskList(List<Task> taskList) {
-        this.taskList = taskList;
+    public void setTaskSet(Set<Task> taskList) {
+        this.taskSet = taskSet;
     }
 
     @Override
@@ -74,13 +72,13 @@ public class Person {
         return "Person{" +
                 "personId=" + personId +
                 ", name='" + name + '\'' +
-                ", projects =" + setProjectsToString(projectList) +
+                ", projects =" + setProjectsToString(projectSet) +
                 "}";
     }
 
-    private String setProjectsToString(List<Project> projects){
+    private String setProjectsToString(Set<Project> projects) {
         StringBuilder builder = new StringBuilder();
-        for (Project project : projects){
+        for (Project project : projects) {
             builder.append(" {id = " + project.getProjectId() + " name = " + project.getName() + "}");
         }
         return builder.toString();

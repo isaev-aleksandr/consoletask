@@ -18,8 +18,8 @@ public class Listener {
     private String input;
 
     // TODO: Output
-    private String selectOptions = "Enter create/show/delete/assign/report";
-    private String selectTarget = "Enter project/person/task";
+    private String selectOptions = "Enter: create/show/delete/assign/report";
+    private String selectTarget = "Enter: project/person/task";
 
     // TODO: Selected optional
     private boolean create = false;
@@ -32,6 +32,8 @@ public class Listener {
     private boolean project = false;
     private boolean person = false;
     private boolean task = false;
+    private boolean personToProject = false;
+    private boolean taskToPerson = false;
 
     public void up() {
         service.testData();
@@ -70,7 +72,8 @@ public class Listener {
                 break;
             case ("assign"):
                 assign = true;
-                System.out.println(selectTarget);
+                System.out.println("Enter: person to project/task to person");
+                getInput();
                 break;
             case ("report"):
                 report = true;
@@ -142,6 +145,24 @@ public class Listener {
                 }
                 getInput();
                 break;
+            case ("person to project"):
+                if (assign) {
+                    personToProject = true;
+                    System.out.println("Enter: person_id/project_id");
+                } else {
+                    System.out.println(selectOptions);
+                }
+                getInput();
+                break;
+            case ("task to person"):
+                if (assign) {
+                    taskToPerson = true;
+                    System.out.println("Enter: task_id/person_id");
+                } else {
+                    System.out.println(selectOptions);
+                }
+                getInput();
+                break;
             default:
                 if (create && project) {
                     Project createdProject = new Project();
@@ -192,24 +213,66 @@ public class Listener {
 
                 }
                 if (delete && person) {
-                    Long PersonId = Long.parseLong(input);
-                    service.deletePerson(PersonId);
-                    System.out.println("Person deleted");
-                    for (Person person : service.findAllPersons()) {
-                        System.out.println(person.toString());
+                    try {
+                        Long PersonId = Long.parseLong(input);
+                        service.deletePerson(PersonId);
+                        System.out.println("Person deleted");
+                        for (Person person : service.findAllPersons()) {
+                            System.out.println(person.toString());
+                        }
+                        delete = false;
+                        person = false;
+                    } catch (NumberFormatException e) {
+                        System.out.println("expected number");
                     }
-                    delete = false;
-                    person = false;
                 }
                 if (delete && task) {
-                    Long TaskId = Long.parseLong(input);
-                    service.deleteTask(TaskId);
-                    System.out.println("Task deleted");
-                    for (Task task : service.findAllTasks()) {
-                        System.out.println(task.toString());
+                    try {
+                        Long TaskId = Long.parseLong(input);
+                        service.deleteTask(TaskId);
+                        System.out.println("Task deleted");
+                        for (Task task : service.findAllTasks()) {
+                            System.out.println(task.toString());
+                        }
+                        delete = false;
+                        task = false;
+                    } catch (NumberFormatException e) {
+                        System.out.println("expected number");
                     }
-                    delete = false;
-                    task = false;
+                }
+                if (assign && personToProject) {
+                    try {
+                        try {
+                            long[] parseInput = getParseInput(input);
+                            service.assignPersonToProject(parseInput);
+                            System.out.println("person " + parseInput[0] +
+                                    " assigned to the project " + parseInput[1]);
+                            assign = false;
+                            personToProject = false;
+                        } catch (ArrayIndexOutOfBoundsException e){
+                            getInput();
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("expected format 2/3");
+                    }
+                }
+                if (assign && taskToPerson) {
+                    try {
+                        try {
+                            long[] parseInput = getParseInput(input);
+                            service.assignTaskToPerson(parseInput);
+                            System.out.println("task " + parseInput[0] +
+                                    " assigned to the person " + parseInput[1]);
+                            assign = false;
+                            taskToPerson = false;
+                        } catch (ArrayIndexOutOfBoundsException e){
+                            getInput();
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("expected format 2/3");
+                    }
                 }
                 if (!create && !show && !delete && !assign && !report) {
                     System.out.println(selectOptions);
@@ -218,6 +281,7 @@ public class Listener {
                 getInput();
                 break;
         }
+
 
 //        String text = in.nextLine();
 //        Long l = Long.parseLong(text);
@@ -231,6 +295,17 @@ public class Listener {
 //        }
 
         in.close();
+    }
+
+    private long[] getParseInput(String inputToParse) {
+        String[] subString = inputToParse.split("/");
+        try {
+            long[] subLong = {Long.parseLong(subString[0]), Long.parseLong(subString[1])};
+            return subLong;
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("expected format 2/3");
+            throw e;
+        }
     }
 
 
