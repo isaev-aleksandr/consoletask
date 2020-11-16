@@ -1,10 +1,8 @@
 package ru.isaev.consoletask.business;
 
-
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.isaev.consoletask.model.Person;
@@ -13,6 +11,14 @@ import ru.isaev.consoletask.model.Task;
 import ru.isaev.consoletask.repository.PersonRep;
 import ru.isaev.consoletask.repository.ProjectRep;
 import ru.isaev.consoletask.repository.TaskRep;
+import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.persistence.EntityManager;
 
@@ -31,6 +37,45 @@ class Service {
 
     @Autowired
     private TaskRep taskRep;
+
+    public void loadTestData(){
+        try {
+            // Создается построитель документа
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            // Создается дерево DOM документа из файла
+            Document document = documentBuilder.parse("src/main/resources/testData.xml");
+
+            // Получаем корневой элемент
+            Node root = document.getDocumentElement();
+
+            System.out.println("List of books:");
+            System.out.println();
+            // Просматриваем все подэлементы корневого - т.е. книги
+            NodeList books = root.getChildNodes();
+            for (int i = 0; i < books.getLength(); i++) {
+                Node book = books.item(i);
+                // Если нода не текст, то это книга - заходим внутрь
+                if (book.getNodeType() != Node.TEXT_NODE) {
+                    NodeList bookProps = book.getChildNodes();
+                    for(int j = 0; j < bookProps.getLength(); j++) {
+                        Node bookProp = bookProps.item(j);
+                        // Если нода не текст, то это один из параметров книги - печатаем
+                        if (bookProp.getNodeType() != Node.TEXT_NODE) {
+                            System.out.println(bookProp.getNodeName() + ":" + bookProp.getChildNodes().item(0).getTextContent());
+                        }
+                    }
+                    System.out.println("===========>>>>");
+                }
+            }
+
+        } catch (ParserConfigurationException ex) {
+            ex.printStackTrace(System.out);
+        } catch (SAXException ex) {
+            ex.printStackTrace(System.out);
+        } catch (IOException ex) {
+            ex.printStackTrace(System.out);
+        }
+    };
 
     public void testData() {
 
@@ -125,7 +170,7 @@ class Service {
     public void deletePerson(Long id) {
         Person person = personRep.findByPersonId(id);
         Set<Project> projects = projectRep.findAll();
-        for (Project project: projects){
+        for (Project project : projects) {
             project.getPersonSet().remove(person);
             person.getProjectSet().remove(project);
         }
@@ -141,17 +186,30 @@ class Service {
         taskRep.deleteByTaskId(id);
     }
 
-    public void assignPersonToProject(long[] assignPersonToProject){
+    public void assignPersonToProject(long[] assignPersonToProject) {
         Person person = personRep.findByPersonId(assignPersonToProject[0]);
         Project project = projectRep.findByProjectId(assignPersonToProject[1]);
         project.getPersonSet().add(person);
         saveProject(project);
     }
 
-    public void assignTaskToPerson(long[] assignTaskToPerson){
+    public void assignTaskToPerson(long[] assignTaskToPerson) {
         Task task = taskRep.findByTaskId(assignTaskToPerson[0]);
         Person person = personRep.findByPersonId(assignTaskToPerson[1]);
         task.setPerson(person);
         saveTask(task);
+    }
+
+    public void report(long[] personProject) {
+        Project project = projectRep.findByProjectId(personProject[1]);
+        Person person = personRep.findByPersonId(personProject[0]);
+        for (Person p : project.getPersonSet()) {
+            if (p.getPersonId() == person.getPersonId()) {
+                System.out.println("On project " + project.getName() + " " + person.getName() + " has tasks:");
+                for (Task task : p.getTaskSet()) {
+                    System.out.println(task.getName());
+                }
+            }
+        }
     }
 }

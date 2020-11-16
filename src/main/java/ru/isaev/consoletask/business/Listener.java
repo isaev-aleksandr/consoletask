@@ -37,6 +37,7 @@ public class Listener {
 
     public void up() {
         service.testData();
+        service.loadTestData();
         System.out.println(selectOptions);
         getInput();
 
@@ -45,7 +46,6 @@ public class Listener {
     private void getInput() {
         if (in.hasNextInt()) {
             input = String.valueOf(in.nextInt());
-
         } else {
             input = in.nextLine();
         }
@@ -58,26 +58,22 @@ public class Listener {
             case ("create"):
                 create = true;
                 System.out.println(selectTarget);
-                getInput();
                 break;
             case ("show"):
                 show = true;
                 System.out.println(selectTarget);
-                getInput();
                 break;
             case ("delete"):
                 delete = true;
                 System.out.println(selectTarget);
-                getInput();
                 break;
             case ("assign"):
                 assign = true;
                 System.out.println("Enter: person to project/task to person");
-                getInput();
                 break;
             case ("report"):
                 report = true;
-                System.out.println(selectTarget);
+                System.out.println("Enter: project_id/person for task report");
                 break;
             case ("project"):
                 if (show) {
@@ -99,7 +95,6 @@ public class Listener {
                         }
                     }
                 }
-                getInput();
                 break;
             case ("person"):
                 if (show) {
@@ -114,14 +109,13 @@ public class Listener {
                         System.out.println("Enter person ID");
                     } else {
                         if (create) {
-                            project = true;
+                            person = true;
                             System.out.println("Enter person name");
                         } else {
                             System.out.println(selectOptions);
                         }
                     }
                 }
-                getInput();
                 break;
             case ("task"):
                 if (show) {
@@ -143,7 +137,6 @@ public class Listener {
                         }
                     }
                 }
-                getInput();
                 break;
             case ("person to project"):
                 if (assign) {
@@ -152,7 +145,6 @@ public class Listener {
                 } else {
                     System.out.println(selectOptions);
                 }
-                getInput();
                 break;
             case ("task to person"):
                 if (assign) {
@@ -161,7 +153,6 @@ public class Listener {
                 } else {
                     System.out.println(selectOptions);
                 }
-                getInput();
                 break;
             default:
                 if (create && project) {
@@ -249,8 +240,7 @@ public class Listener {
                                     " assigned to the project " + parseInput[1]);
                             assign = false;
                             personToProject = false;
-                        } catch (ArrayIndexOutOfBoundsException e){
-                            getInput();
+                        } catch (ArrayIndexOutOfBoundsException e) {
                             break;
                         }
                     } catch (NumberFormatException e) {
@@ -262,12 +252,22 @@ public class Listener {
                         try {
                             long[] parseInput = getParseInput(input);
                             service.assignTaskToPerson(parseInput);
-                            System.out.println("task " + parseInput[0] +
-                                    " assigned to the person " + parseInput[1]);
                             assign = false;
                             taskToPerson = false;
-                        } catch (ArrayIndexOutOfBoundsException e){
-                            getInput();
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("expected format 2/3");
+                    }
+                }
+                if (report) {
+                    try {
+                        try {
+                            long[] parseInput = getParseInput(input);
+                            service.report(parseInput);
+                            report = false;
+                        } catch (ArrayIndexOutOfBoundsException e) {
                             break;
                         }
                     } catch (NumberFormatException e) {
@@ -276,25 +276,11 @@ public class Listener {
                 }
                 if (!create && !show && !delete && !assign && !report) {
                     System.out.println(selectOptions);
-
                 }
-                getInput();
+
                 break;
         }
-
-
-//        String text = in.nextLine();
-//        Long l = Long.parseLong(text);
-//        System.out.print(text);
-//        System.out.print("Input age: ");
-//        try {
-//            int age = in.nextInt();
-//        } catch (InputMismatchException e){
-//            System.out.println("Mistake");
-//            System.out.println(e);
-//        }
-
-        in.close();
+        getInput();
     }
 
     private long[] getParseInput(String inputToParse) {
@@ -302,7 +288,7 @@ public class Listener {
         try {
             long[] subLong = {Long.parseLong(subString[0]), Long.parseLong(subString[1])};
             return subLong;
-        } catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("expected format 2/3");
             throw e;
         }
