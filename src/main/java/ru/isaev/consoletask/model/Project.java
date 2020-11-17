@@ -2,7 +2,6 @@ package ru.isaev.consoletask.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -16,7 +15,6 @@ public class Project {
 
     @Column(name = "project_name")
     private String name;
-
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_person",

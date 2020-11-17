@@ -2,9 +2,7 @@ package ru.isaev.consoletask.model;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,7 +19,6 @@ public class Person {
     @Column(name = "person_name")
     private String name;
 
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_person",
             joinColumns = {@JoinColumn(name = "user_id")},
@@ -33,7 +30,6 @@ public class Person {
 
     public Person() {
     }
-
 
     public long getPersonId() {
         return personId;

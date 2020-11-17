@@ -1,0 +1,10 @@
+ru/isaev/consoletask/business/Loader.class
+ru/isaev/consoletask/App.class
+ru/isaev/consoletask/model/Project.class
+ru/isaev/consoletask/model/Task.class
+ru/isaev/consoletask/repository/TaskRep.class
+ru/isaev/consoletask/business/Service.class
+ru/isaev/consoletask/repository/ProjectRep.class
+ru/isaev/consoletask/business/Listener.class
+ru/isaev/consoletask/model/Person.class
+ru/isaev/consoletask/repository/PersonRep.class

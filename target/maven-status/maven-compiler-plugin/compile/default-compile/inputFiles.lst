@@ -1,0 +1,10 @@
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/model/Person.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/model/Task.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/repository/PersonRep.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/App.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/repository/ProjectRep.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/business/Loader.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/business/Service.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/repository/TaskRep.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/model/Project.java
+/home/alexandr/IdeaProjects/consoletask/src/main/java/ru/isaev/consoletask/business/Listener.java

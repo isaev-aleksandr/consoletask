@@ -30,64 +30,15 @@ class Service {
     @Autowired
     private TaskRep taskRep;
 
-    public void testData() {
+    public Project findProjectByProjectID(Long id){
+        return projectRep.findByProjectId(id);
+    }
 
-        Project project = new Project();
-        project.setName("Apple");
-        projectRep.save(project);
-
-        Project project2 = new Project();
-        project2.setName("Android");
-        projectRep.save(project2);
-
-        Project project3 = new Project();
-        project3.setName("Windows");
-        projectRep.save(project3);
-
-        Person person = new Person();
-        person.setName("Alex");
-        personRep.save(person);
-
-        Person person2 = new Person();
-        person2.setName("Bill");
-        personRep.save(person2);
-
-        Person person3 = new Person();
-        person3.setName("Jhon");
-        personRep.save(person3);
-
-
-        Task task = new Task();
-        task.setName("Deploy project");
-        task.setPerson(person);
-        taskRep.save(task);
-
-        Task task2 = new Task();
-        task2.setName("Handle the exception");
-        task2.setPerson(person);
-        taskRep.save(task2);
-
-        Task task3 = new Task();
-        task3.setName("Handle the exception");
-        task3.setPerson(person2);
-        taskRep.save(task3);
-
-        Task task4 = new Task();
-        task4.setName("Handle the exception");
-        task4.setPerson(person3);
-        taskRep.save(task4);
-
-
-        project.getPersonSet().add(person);
-        project.getPersonSet().add(person2);
-        project2.getPersonSet().add(person);
-        project3.getPersonSet().add(person3);
-
-        projectRep.save(project);
-        projectRep.save(project2);
-        projectRep.save(project3);
-
-        System.out.println("test data loaded");
+    public Person findPersonByPersonID(Long id){
+        return personRep.findByPersonId(id);
+    }
+    public Task findTaskByTaskID(Long id){
+        return taskRep.findByTaskId(id);
     }
 
     public Set<Project> findAllProjects() {

@@ -23,9 +23,6 @@ public class Loader {
     private Service service;
 
     @Autowired
-    private TaskRep taskRep;
-
-    @Autowired
     private PersonRep personRep;
 
     public void loadTestData() {
@@ -33,20 +30,19 @@ public class Loader {
         loadPersons();
         loadProjects();
         loadTasks();
+        loadProjectPerson();
         System.out.println("test data loaded");
     }
 
     private void loadProjects() {
-        String filepath = "src/main/resources/projects.xml";
+        String filepath = "projects.xml";
         File xmlFile = new File(filepath);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
             Document doc = builder.parse(xmlFile);
-
             NodeList nodeList = doc.getElementsByTagName("project");
-
             for (int i = 0; i < nodeList.getLength(); i++) {
                 service.saveProject(getProject(nodeList.item(i)));
             }
@@ -56,38 +52,24 @@ public class Loader {
     }
 
     private void loadPersons() {
-        String filepath = "src/main/resources/persons.xml";
+        String filepath = "persons.xml";
         File xmlFile = new File(filepath);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
             Document doc = builder.parse(xmlFile);
-//            doc.getDocumentElement().normalize();
-//            System.out.println("Корневой элемент: " + doc.getDocumentElement().getNodeName());
-            // получаем узлы с именем Language
-            // теперь XML полностью загружен в память
-            // в виде объекта Document
             NodeList nodeList = doc.getElementsByTagName("Person");
-
-            // создадим из него список объектов Language
-//            List<Language> langList = new ArrayList<Language>();
             for (int i = 0; i < nodeList.getLength(); i++) {
-//                langList.add(getLanguage(nodeList.item(i)));
                 service.savePerson(getPerson(nodeList.item(i)));
             }
-
-            // печатаем в консоль информацию по каждому объекту Language
-//            for (Person person : langList) {
-//                System.out.println(lang.toString());
-//            }
         } catch (Exception exc) {
             exc.printStackTrace();
         }
     }
 
     private void loadTasks() {
-        String filepath = "src/main/resources/tasks.xml";
+        String filepath = "tasks.xml";
         File xmlFile = new File(filepath);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -99,6 +81,24 @@ public class Loader {
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 service.saveTask(getTask(nodeList.item(i)));
+            }
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        }
+    }
+
+    private void loadProjectPerson() {
+        String filepath = "projects_persons.xml";
+        File xmlFile = new File(filepath);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(xmlFile);
+            NodeList nodeList = doc.getElementsByTagName("project_person");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                service.assignPersonToProject(getPersonProject(nodeList.item(i)));
             }
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -134,21 +134,19 @@ public class Loader {
         return task;
     }
 
-    private long[] getProjectPerson(Node node) {
+    private long[] getPersonProject(Node node) {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             try {
                 Element element = (Element) node;
-                long[] subLong = {Long.parseLong(getTagValue("project_id", element)),
-                        Long.parseLong(getTagValue("person_id", element))};
+                long[] subLong = {Long.parseLong(getTagValue("person_id", element)),
+                        Long.parseLong(getTagValue("project_id", element))};
                 return subLong;
             } catch (ArrayIndexOutOfBoundsException e) {
                 throw e;
             }
-
         }
-        return new long []{1L,1L};
+        return new long[]{1L, 1L};
     }
-
     private static String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
         Node node = (Node) nodeList.item(0);

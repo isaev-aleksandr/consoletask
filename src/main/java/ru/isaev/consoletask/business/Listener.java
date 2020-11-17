@@ -14,14 +14,15 @@ public class Listener {
     @Autowired
     private Service service;
 
-    @Autowired Loader loader;
+    @Autowired
+    Loader loader;
 
     private Scanner in = new Scanner(System.in);
     private String input;
 
     // TODO: Output
-    private String selectOptions = "Enter: create/show/delete/assign/report";
-    private String selectTarget = "Enter: project/person/task";
+    private final String selectOptions = "Enter: create/show/delete/assign/report";
+    private final String selectTarget = "Enter: project/person/task";
 
     // TODO: Selected optional
     private boolean create = false;
@@ -38,11 +39,9 @@ public class Listener {
     private boolean taskToPerson = false;
 
     public void up() {
-        service.testData();
         loader.loadTestData();
         System.out.println(selectOptions);
         getInput();
-
     }
 
     private void getInput() {
@@ -238,8 +237,8 @@ public class Listener {
                         try {
                             long[] parseInput = getParseInput(input);
                             service.assignPersonToProject(parseInput);
-                            System.out.println("person " + parseInput[0] +
-                                    " assigned to the project " + parseInput[1]);
+                            System.out.println("person " + service.findPersonByPersonID(parseInput[0]).getName() +
+                                    " assigned to the project " + service.findProjectByProjectID(parseInput[1]).getName());
                             assign = false;
                             personToProject = false;
                         } catch (ArrayIndexOutOfBoundsException e) {
@@ -254,6 +253,8 @@ public class Listener {
                         try {
                             long[] parseInput = getParseInput(input);
                             service.assignTaskToPerson(parseInput);
+                            System.out.println("task " + service.findTaskByTaskID(parseInput[0]).getName() +
+                                    " assigned to the person " + service.findPersonByPersonID(parseInput[0]).getName());
                             assign = false;
                             taskToPerson = false;
                         } catch (ArrayIndexOutOfBoundsException e) {
@@ -279,7 +280,6 @@ public class Listener {
                 if (!create && !show && !delete && !assign && !report) {
                     System.out.println(selectOptions);
                 }
-
                 break;
         }
         getInput();
@@ -288,8 +288,7 @@ public class Listener {
     private long[] getParseInput(String inputToParse) {
         String[] subString = inputToParse.split("/");
         try {
-            long[] subLong = {Long.parseLong(subString[0]), Long.parseLong(subString[1])};
-            return subLong;
+            return new long[]{Long.parseLong(subString[0]), Long.parseLong(subString[1])};
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("expected format 2/3");
             throw e;
