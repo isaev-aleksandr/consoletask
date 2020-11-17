@@ -14,6 +14,8 @@ public class Listener {
     @Autowired
     private Service service;
 
+    @Autowired Loader loader;
+
     private Scanner in = new Scanner(System.in);
     private String input;
 
@@ -37,7 +39,7 @@ public class Listener {
 
     public void up() {
         service.testData();
-        service.loadTestData();
+        loader.loadTestData();
         System.out.println(selectOptions);
         getInput();
 
